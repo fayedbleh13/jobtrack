@@ -50,3 +50,7 @@ apps/api/src/generated/
 
 # Agent tooling
 .commandcode/
+
+# Personal interview preparation — deliberately not published
+TALKING_POINTS.md
+NOTES.md
