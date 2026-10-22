@@ -1,0 +1,35 @@
+query Applications($status: ApplicationStatus, $search: String) {
+  applications(status: $status, search: $search) {
+    id
+    company
+    role
+    location
+    salaryMin
+    salaryMax
+    source
+    status
+    priority
+    appliedAt
+    updatedAt
+    contacts {
+      id
+      name
+      role
+    }
+    reminders {
+      id
+      title
+      dueAt
+      done
+    }
+  }
+}
+
+mutation CreateApplication($input: CreateApplicationInput!) {
+  createApplication(input: $input) {
+    id
+    company
+    role
+    status
+  }
+}
