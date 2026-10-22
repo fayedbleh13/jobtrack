@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import type { ApplicationsQuery } from '@/graphql/generated/graphql';
 import { formatSalaryRange } from '@/lib/format';
@@ -26,6 +27,10 @@ export function ApplicationCard({ application }: { application: ApplicationSumma
         {salary ? <span>{salary}</span> : null}
         {application.source ? <span>via {application.source}</span> : null}
         {nextReminder ? <span>Next reminder: {nextReminder.title}</span> : null}
+
+        <Link href={`/applications/${application.id}`} className="mt-2 text-slate-900 underline">
+          View details
+        </Link>
       </CardContent>
     </Card>
   );

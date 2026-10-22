@@ -12,8 +12,8 @@ const application: ApplicationSummary = {
   source: 'LinkedIn',
   status: 'INTERVIEW',
   priority: 3,
-  appliedAt: null,
-  updatedAt: null,
+  appliedAt: '2026-10-01T12:00:00.000Z',
+  updatedAt: '2026-10-02T12:00:00.000Z',
   contacts: [],
   reminders: [],
 };
@@ -28,8 +28,8 @@ const minimal: ApplicationSummary = {
   source: null,
   status: 'WISHLIST',
   priority: null,
-  appliedAt: null,
-  updatedAt: null,
+  appliedAt: '2026-10-01T12:00:00.000Z',
+  updatedAt: '2026-10-02T12:00:00.000Z',
   contacts: [],
   reminders: [],
 };
@@ -59,11 +59,27 @@ describe('ApplicationCard', () => {
       <ApplicationCard
         application={{
           ...application,
-          reminders: [{ id: 'r1', title: 'Send thank-you note', dueAt: null, done: false }],
+          reminders: [
+            {
+              id: 'r1',
+              title: 'Send thank-you note',
+              dueAt: '2026-10-06T12:00:00.000Z',
+              done: false,
+            },
+          ],
         }}
       />,
     );
 
     expect(screen.getByText('Next reminder: Send thank-you note')).toBeInTheDocument();
+  });
+
+  it('links to the detail screen', () => {
+    render(<ApplicationCard application={application} />);
+
+    expect(screen.getByRole('link', { name: 'View details' })).toHaveAttribute(
+      'href',
+      '/applications/a1',
+    );
   });
 });

@@ -1,0 +1,54 @@
+query Application($id: ID!) {
+  application(id: $id) {
+    id
+    company
+    role
+    location
+    salaryMin
+    salaryMax
+    jobUrl
+    source
+    status
+    priority
+    appliedAt
+    notes
+    createdAt
+    updatedAt
+    allowedNextStatuses
+    contacts {
+      id
+      name
+      role
+      email
+      linkedin
+    }
+    timeline {
+      id
+      fromStatus
+      toStatus
+      at
+      note
+    }
+    reminders {
+      id
+      title
+      dueAt
+      done
+    }
+  }
+}
+
+mutation ChangeStatus($id: ID!, $status: ApplicationStatus!, $note: String) {
+  changeStatus(id: $id, status: $status, note: $note) {
+    id
+    status
+    allowedNextStatuses
+    timeline {
+      id
+      fromStatus
+      toStatus
+      at
+      note
+    }
+  }
+}
