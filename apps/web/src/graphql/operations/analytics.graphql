@@ -1,0 +1,15 @@
+query Analytics {
+  analytics {
+    total
+    responseRate
+    avgDaysToInterview
+    byStatus {
+      status
+      count
+    }
+    applicationsOverTime {
+      date
+      count
+    }
+  }
+}
