@@ -217,6 +217,15 @@ Run from the repository root.
 | `WEB_ORIGIN` | `http://localhost:3000` | Allowed CORS origin; the cookie depends on it. |
 | `COOKIE_SECURE` | `false` | Set to `true` only when served over HTTPS. |
 | `NEXT_PUBLIC_API_URL` | `http://localhost:4000/graphql` | Inlined at build time. |
+| `API_PROXY_URL` | *(empty)* | When set, Next proxies `/graphql` here. See [DEPLOYMENT.md](./DEPLOYMENT.md). |
+
+---
+
+## Deployment
+
+`DEPLOYMENT.md` covers hosting the web on Vercel, the API on Render from the existing
+Dockerfile, and Postgres on Neon — including why the web proxies `/graphql` rather than calling
+the API cross-origin.
 
 ---
 

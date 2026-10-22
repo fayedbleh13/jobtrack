@@ -18,5 +18,8 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
+  // `/graphql` is excluded: when Next proxies the API it must reach the handler
+  // untouched. The API guards its own operations, and redirecting an
+  // unauthenticated `login` mutation would make signing in impossible.
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|graphql).*)'],
 };
