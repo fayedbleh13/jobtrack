@@ -6,6 +6,16 @@ and the follow-ups that keep them moving.
 **Monorepo** — Next.js (React) web client, NestJS GraphQL API, Prisma + Postgres, one
 command to run.
 
+## Live demo
+
+**https://jobtrack-blond.vercel.app**
+
+Sign in with `demo@jobtrack.dev` / `password123` — the database is seeded with eight
+applications across every stage.
+
+> The API runs on a free instance that sleeps when idle, so the very first request after a
+> quiet period can take 30–60 seconds to wake. Everything after that is fast.
+
 ---
 
 ## Quick start
