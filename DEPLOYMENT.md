@@ -81,17 +81,17 @@ Environment variables:
 | `JWT_SECRET` | a long random string — `openssl rand -hex 32` |
 | `WEB_ORIGIN` | your Vercel URL, e.g. `https://jobtrack.vercel.app` |
 | `COOKIE_SECURE` | `true` |
-| `NODE_OPTIONS` | `--dns-result-order=ipv4first` |
 
 Do **not** set a port. Render injects `PORT` and routes only to it; the API reads `PORT` first
 and falls back to `API_PORT` for local use.
 
-**Why `NODE_OPTIONS`.** Neon publishes both A and AAAA records, but Render's containers have no
-IPv6 route. Since Node 17, `dns.lookup` returns records in verbatim order, so if the AAAA comes
-back first the driver tries it and fails instantly with `ENETUNREACH`, which Prisma surfaces as
-`P1001: Can't reach database server`. Forcing IPv4-first is the fix. The fingerprint is the
-*timing*: P1001 within a second or two of the datasource line is a routing failure; a slow
-failure is a sleeping compute or a bad host.
+`NODE_OPTIONS=--dns-result-order=ipv4first` is already set in the image, so nothing needs adding
+in the dashboard. **Why:** Neon publishes both A and AAAA records, but Render's containers have
+no IPv6 route. Since Node 17, `dns.lookup` returns records in verbatim order, so if the AAAA
+comes back first the driver tries it and fails instantly with `ENETUNREACH`, which Prisma
+surfaces as `P1001: Can't reach database server`. The fingerprint is the *timing*: P1001 within
+a second or two of the datasource line is a routing failure; a slow failure is a sleeping
+compute or a bad host.
 
 Deploy. The logs should show, in order:
 

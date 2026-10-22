@@ -20,6 +20,11 @@ FROM base AS runtime
 
 ENV NODE_ENV=production
 
+# Providers such as Render have no IPv6 route, while managed Postgres hosts publish AAAA
+# records too. Node returns DNS results in verbatim order since v17, so an AAAA-first answer
+# fails instantly. Prefer IPv4 so the database is reachable on any host.
+ENV NODE_OPTIONS=--dns-result-order=ipv4first
+
 WORKDIR /app
 
 COPY --from=build /app/package.json /app/pnpm-lock.yaml /app/pnpm-workspace.yaml ./
