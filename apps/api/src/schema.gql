@@ -2,6 +2,20 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type AnalyticsSummary {
+  applicationsOverTime: [TimePoint!]!
+
+  """Mean days between applying and the first interview, if any."""
+  avgDaysToInterview: Float
+
+  """Every status, including those with a count of zero."""
+  byStatus: [StatusCount!]!
+
+  """Fraction of submitted applications that received any response."""
+  responseRate: Float!
+  total: Int!
+}
+
 type Application {
   """Statuses this application may legally move to next."""
   allowedNextStatuses: [ApplicationStatus!]!
@@ -82,6 +96,7 @@ type Mutation {
 }
 
 type Query {
+  analytics: AnalyticsSummary!
   application(id: ID!): Application!
   applications(search: String, status: ApplicationStatus): [Application!]!
   health: String!
@@ -107,6 +122,16 @@ type StageEvent {
   id: ID!
   note: String
   toStatus: ApplicationStatus!
+}
+
+type StatusCount {
+  count: Int!
+  status: ApplicationStatus!
+}
+
+type TimePoint {
+  count: Int!
+  date: String!
 }
 
 input UpdateApplicationInput {
