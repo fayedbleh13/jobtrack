@@ -1,6 +1,6 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
+import { useState } from 'react';
 import { formatDate } from '@/lib/format';
 import type { Reminder } from './reminders-view-model';
 
@@ -12,21 +12,37 @@ type ReminderItemProps = {
 };
 
 export function ReminderItem({ reminder, overdue, busy, onToggle }: ReminderItemProps) {
+  // Ticks immediately on click, then the row disappears when the refetch lands.
+  const [checked, setChecked] = useState(false);
+
+  function handleToggle() {
+    setChecked(true);
+    onToggle(reminder.id);
+  }
+
   return (
-    <li className="flex items-start justify-between gap-3 rounded-lg border bg-white p-3">
-      <div className="flex flex-col gap-0.5">
+    <li className="flex items-start gap-3 rounded-lg border bg-card p-3 transition-colors hover:border-primary/30">
+      <input
+        type="checkbox"
+        checked={checked}
+        onChange={handleToggle}
+        disabled={busy}
+        aria-label={`Mark "${reminder.title}" as done`}
+        className="mt-0.5 size-6 shrink-0 cursor-pointer accent-primary disabled:cursor-not-allowed disabled:opacity-50"
+      />
+
+      <div className="flex min-w-0 flex-1 flex-col gap-0.5">
         <span className="text-sm font-medium">{reminder.title}</span>
-        <span className="text-xs text-slate-500">
+        <span className="truncate text-xs text-muted-foreground">
           {reminder.application.company} · due {formatDate(reminder.dueAt)}
         </span>
       </div>
 
-      <div className="flex shrink-0 items-center gap-2">
-        {overdue ? <span className="text-xs font-medium text-rose-600">Overdue</span> : null}
-        <Button size="sm" variant="outline" disabled={busy} onClick={() => onToggle(reminder.id)}>
-          Mark done
-        </Button>
-      </div>
+      {overdue ? (
+        <span className="shrink-0 rounded-full bg-destructive/10 px-2 py-0.5 text-xs font-medium text-destructive">
+          Overdue
+        </span>
+      ) : null}
     </li>
   );
 }

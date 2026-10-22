@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { SOURCE_OPTIONS } from './application-options';
 
 const WHOLE_NUMBER = /^\d+$/;
 
@@ -6,8 +7,9 @@ export const createApplicationSchema = z
   .object({
     company: z.string().trim().min(1, 'Company is required').max(120),
     role: z.string().trim().min(1, 'Role is required').max(120),
+    status: z.enum(['APPLIED', 'WISHLIST']).optional(),
     location: z.string().trim().max(120).optional(),
-    source: z.string().trim().max(80).optional(),
+    source: z.enum(SOURCE_OPTIONS).optional(),
     priority: z.enum(['1', '2', '3']).optional(),
     salaryMin: z.string().trim().optional(),
     salaryMax: z.string().trim().optional(),
