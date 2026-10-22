@@ -6,6 +6,11 @@ RUN apt-get update \
 
 RUN npm install -g pnpm@12.11.2
 
+# Provider networks (Render included) are IPv4-only, while managed Postgres hosts such as Neon
+# also publish AAAA records. Prisma's migration engine resolves through libc rather than Node,
+# so Node's --dns-result-order setting does not reach it. This makes getaddrinfo prefer IPv4.
+RUN echo 'precedence ::ffff:0:0/96 100' >> /etc/gai.conf
+
 WORKDIR /app
 
 FROM base AS build
