@@ -56,4 +56,9 @@ export class ApplicationModel {
 
   @Field(() => [ReminderModel])
   reminders: ReminderModel[];
+
+  @Field(() => [ApplicationStatus], {
+    description: 'Statuses this application may legally move to next.',
+  })
+  allowedNextStatuses: ApplicationStatus[];
 }

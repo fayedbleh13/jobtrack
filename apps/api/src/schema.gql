@@ -3,6 +3,8 @@
 # ------------------------------------------------------
 
 type Application {
+  """Statuses this application may legally move to next."""
+  allowedNextStatuses: [ApplicationStatus!]!
   appliedAt: DateTime
   company: String!
   contacts: [Contact!]!

@@ -1,9 +1,10 @@
 import { UseGuards } from '@nestjs/common';
-import { Args, ID, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, ID, Mutation, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { GqlAuthGuard } from '../auth/gql-auth.guard';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { ApplicationStatus } from '../common/graphql/application-status.enum';
 import { UserEntity } from '../users/user.entity';
+import { ALLOWED_STATUS_TRANSITIONS } from './application-status.rules';
 import { ApplicationsService } from './applications.service';
 import { CreateApplicationInput } from './dto/create-application.input';
 import { UpdateApplicationInput } from './dto/update-application.input';
@@ -13,6 +14,11 @@ import { ApplicationModel } from './models/application.model';
 @UseGuards(GqlAuthGuard)
 export class ApplicationsResolver {
   constructor(private readonly applicationsService: ApplicationsService) {}
+
+  @ResolveField(() => [ApplicationStatus])
+  allowedNextStatuses(@Parent() application: { status: ApplicationStatus }) {
+    return ALLOWED_STATUS_TRANSITIONS[application.status];
+  }
 
   @Query(() => [ApplicationModel])
   applications(
