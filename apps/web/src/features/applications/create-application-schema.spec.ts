@@ -44,4 +44,18 @@ describe('createApplicationSchema', () => {
     expect(createApplicationSchema.safeParse({ ...MINIMAL, priority: '2' }).success).toBe(true);
     expect(createApplicationSchema.safeParse({ ...MINIMAL, priority: '5' }).success).toBe(false);
   });
+
+  it('accepts a known source and rejects a free-text one', () => {
+    expect(createApplicationSchema.safeParse({ ...MINIMAL, source: 'Referral' }).success).toBe(
+      true,
+    );
+    expect(
+      createApplicationSchema.safeParse({ ...MINIMAL, source: 'Carrier pigeon' }).success,
+    ).toBe(false);
+  });
+
+  it('accepts only the two starting stages', () => {
+    expect(createApplicationSchema.safeParse({ ...MINIMAL, status: 'APPLIED' }).success).toBe(true);
+    expect(createApplicationSchema.safeParse({ ...MINIMAL, status: 'OFFER' }).success).toBe(false);
+  });
 });

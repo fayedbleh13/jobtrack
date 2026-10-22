@@ -1,6 +1,7 @@
 'use client';
 
 import { useMutation } from '@apollo/client/react';
+import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { type FormEvent, useState } from 'react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -31,11 +32,11 @@ export function LoginForm() {
   return (
     <Card className="w-full max-w-sm">
       <CardHeader>
-        <CardTitle>Sign in</CardTitle>
+        <CardTitle className="text-xl">Sign in</CardTitle>
         <CardDescription>Demo credentials are pre-filled — just press Sign in.</CardDescription>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <form onSubmit={handleSubmit} aria-busy={loading} className="flex flex-col gap-4">
           <div className="flex flex-col gap-2">
             <Label htmlFor="email">Email</Label>
             <Input
@@ -61,14 +62,23 @@ export function LoginForm() {
             />
           </div>
 
-          {error ? (
-            <Alert variant="destructive">
-              <AlertDescription>{error.message}</AlertDescription>
-            </Alert>
-          ) : null}
+          <div aria-live="polite">
+            {error ? (
+              <Alert variant="destructive">
+                <AlertDescription>{error.message}</AlertDescription>
+              </Alert>
+            ) : null}
+          </div>
 
-          <Button type="submit" disabled={loading}>
-            {loading ? 'Signing in…' : 'Sign in'}
+          <Button type="submit" disabled={loading} className="w-full">
+            {loading ? (
+              <>
+                <Loader2 aria-hidden className="size-4 animate-spin" />
+                Signing in…
+              </>
+            ) : (
+              'Sign in'
+            )}
           </Button>
         </form>
       </CardContent>
