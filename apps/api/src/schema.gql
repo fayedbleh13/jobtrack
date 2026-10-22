@@ -1,0 +1,127 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Application {
+  appliedAt: DateTime
+  company: String!
+  contacts: [Contact!]!
+  createdAt: DateTime!
+  id: ID!
+  jobUrl: String
+  location: String
+  notes: String
+  priority: Int
+  reminders: [Reminder!]!
+  role: String!
+  salaryMax: Int
+  salaryMin: Int
+  source: String
+  status: ApplicationStatus!
+  timeline: [StageEvent!]!
+  updatedAt: DateTime!
+}
+
+"""The stage an application is currently in."""
+enum ApplicationStatus {
+  APPLIED
+  GHOSTED
+  INTERVIEW
+  OFFER
+  REJECTED
+  SCREENING
+  WISHLIST
+}
+
+type AuthPayload {
+  user: User!
+}
+
+type Contact {
+  email: String
+  id: ID!
+  linkedin: String
+  name: String!
+  role: String
+}
+
+input CreateApplicationInput {
+  appliedAt: DateTime
+  company: String!
+  jobUrl: String
+  location: String
+  notes: String
+  priority: Int
+  role: String!
+  salaryMax: Int
+  salaryMin: Int
+  source: String
+  status: ApplicationStatus
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+input LoginInput {
+  email: String!
+  password: String!
+}
+
+type Mutation {
+  changeStatus(id: ID!, note: String, status: ApplicationStatus!): Application!
+  createApplication(input: CreateApplicationInput!): Application!
+  deleteApplication(id: ID!): Boolean!
+  login(input: LoginInput!): AuthPayload!
+  logout: Boolean!
+  register(input: RegisterInput!): AuthPayload!
+  updateApplication(id: ID!, input: UpdateApplicationInput!): Application!
+}
+
+type Query {
+  application(id: ID!): Application!
+  applications(search: String, status: ApplicationStatus): [Application!]!
+  health: String!
+  me: User
+}
+
+input RegisterInput {
+  email: String!
+  name: String!
+  password: String!
+}
+
+type Reminder {
+  done: Boolean!
+  dueAt: DateTime!
+  id: ID!
+  title: String!
+}
+
+type StageEvent {
+  at: DateTime!
+  fromStatus: ApplicationStatus
+  id: ID!
+  note: String
+  toStatus: ApplicationStatus!
+}
+
+input UpdateApplicationInput {
+  appliedAt: DateTime
+  company: String
+  jobUrl: String
+  location: String
+  notes: String
+  priority: Int
+  role: String
+  salaryMax: Int
+  salaryMin: Int
+  source: String
+}
+
+type User {
+  email: String!
+  id: ID!
+  name: String!
+}
