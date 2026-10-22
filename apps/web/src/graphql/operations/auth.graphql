@@ -1,0 +1,21 @@
+mutation Login($input: LoginInput!) {
+  login(input: $input) {
+    user {
+      id
+      email
+      name
+    }
+  }
+}
+
+mutation Logout {
+  logout
+}
+
+query Me {
+  me {
+    id
+    email
+    name
+  }
+}
