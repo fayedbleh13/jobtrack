@@ -56,7 +56,7 @@ export class AuthResolver {
     res.cookie(ACCESS_TOKEN_COOKIE, token, {
       httpOnly: true,
       sameSite: 'lax',
-      secure: this.config.get<string>('NODE_ENV') === 'production',
+      secure: this.config.get<string>('COOKIE_SECURE') === 'true',
       path: '/',
       maxAge: ACCESS_TOKEN_MAX_AGE_MS,
     });

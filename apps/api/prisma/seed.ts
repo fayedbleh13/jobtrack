@@ -156,6 +156,12 @@ const applications: ApplicationSeed[] = [
 ];
 
 async function main() {
+  const existingUsers = await prisma.user.count();
+  if (existingUsers > 0) {
+    console.log(`Seed skipped: ${existingUsers} user(s) already exist.`);
+    return;
+  }
+
   await prisma.reminder.deleteMany();
   await prisma.stageEvent.deleteMany();
   await prisma.contact.deleteMany();
