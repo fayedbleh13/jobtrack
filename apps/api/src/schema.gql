@@ -75,6 +75,12 @@ input CreateApplicationInput {
   status: ApplicationStatus
 }
 
+input CreateReminderInput {
+  applicationId: ID!
+  dueAt: DateTime!
+  title: String!
+}
+
 """
 A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
 """
@@ -88,10 +94,12 @@ input LoginInput {
 type Mutation {
   changeStatus(id: ID!, note: String, status: ApplicationStatus!): Application!
   createApplication(input: CreateApplicationInput!): Application!
+  createReminder(input: CreateReminderInput!): Reminder!
   deleteApplication(id: ID!): Boolean!
   login(input: LoginInput!): AuthPayload!
   logout: Boolean!
   register(input: RegisterInput!): AuthPayload!
+  toggleReminder(id: ID!): Reminder!
   updateApplication(id: ID!, input: UpdateApplicationInput!): Application!
 }
 
@@ -101,6 +109,9 @@ type Query {
   applications(search: String, status: ApplicationStatus): [Application!]!
   health: String!
   me: User
+
+  """Reminders that are still open, soonest first."""
+  upcomingReminders: [Reminder!]!
 }
 
 input RegisterInput {
@@ -110,6 +121,8 @@ input RegisterInput {
 }
 
 type Reminder {
+  """The application this reminder belongs to."""
+  application: Application!
   done: Boolean!
   dueAt: DateTime!
   id: ID!

@@ -1,4 +1,5 @@
 import { Field, GraphQLISODateTime, ID, ObjectType } from '@nestjs/graphql';
+import { ApplicationModel } from '../../applications/models/application.model';
 
 @ObjectType('Reminder')
 export class ReminderModel {
@@ -13,4 +14,9 @@ export class ReminderModel {
 
   @Field()
   done: boolean;
+
+  @Field(() => ApplicationModel, {
+    description: 'The application this reminder belongs to.',
+  })
+  application: ApplicationModel;
 }

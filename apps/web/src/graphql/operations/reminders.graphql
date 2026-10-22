@@ -1,0 +1,36 @@
+query UpcomingReminders {
+  upcomingReminders {
+    id
+    title
+    dueAt
+    done
+    application {
+      id
+      company
+      role
+      status
+    }
+  }
+}
+
+mutation CreateReminder($input: CreateReminderInput!) {
+  createReminder(input: $input) {
+    id
+    title
+    dueAt
+    done
+    application {
+      id
+      company
+      role
+      status
+    }
+  }
+}
+
+mutation ToggleReminder($id: ID!) {
+  toggleReminder(id: $id) {
+    id
+    done
+  }
+}

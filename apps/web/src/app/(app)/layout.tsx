@@ -17,6 +17,9 @@ export default function AppLayout({ children }: { children: ReactNode }) {
             <Link href="/analytics" className="hover:text-slate-900">
               Analytics
             </Link>
+            <Link href="/reminders" className="hover:text-slate-900">
+              Reminders
+            </Link>
           </nav>
           <SignOutButton />
         </div>
