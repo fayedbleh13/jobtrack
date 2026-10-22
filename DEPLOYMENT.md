@@ -52,26 +52,38 @@ data on first start.
 
 ## 2. Render (API)
 
-**New → Web Service** → connect this repository.
+First connect GitHub: **Account Settings → GitHub → Connect account**, install the **Render
+GitHub App**, and grant it access to this repository. That installs the webhook which drives
+deploys.
+
+**New → Web Service** → pick this repository.
 
 | Setting | Value |
 | --- | --- |
 | Language | Docker |
 | Root Directory | *(leave empty — the build context must be the repo root)* |
 | Dockerfile Path | `apps/api/Dockerfile` |
+| Branch | `main` |
 | Region | match Neon |
 | Instance type | Free (sleeps when idle — see below) |
 | Health Check Path | `/health` |
+| Auto-Deploy | **After CI Checks Pass** |
+
+**Auto-Deploy is the CI/CD join.** `On Commit` deploys immediately; **`After CI Checks Pass`**
+waits for the GitHub Actions `verify` workflow on that commit to succeed. Combined with
+protected `main`, nothing reaches production from a red build.
 
 Environment variables:
 
 | Key | Value |
 | --- | --- |
 | `DATABASE_URL` | the **direct** Neon string |
-| `JWT_SECRET` | a long random string — not the example value |
+| `JWT_SECRET` | a long random string — `openssl rand -hex 32` |
 | `WEB_ORIGIN` | your Vercel URL, e.g. `https://jobtrack.vercel.app` |
 | `COOKIE_SECURE` | `true` |
-| `API_PORT` | `4000` |
+
+Do **not** set a port. Render injects `PORT` and routes only to it; the API reads `PORT` first
+and falls back to `API_PORT` for local use.
 
 Deploy. The logs should show, in order:
 

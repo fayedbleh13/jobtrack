@@ -14,9 +14,10 @@ async function bootstrap(): Promise<void> {
     credentials: true,
   });
 
-  const port = Number(process.env.API_PORT ?? 4000);
-  await app.listen(port);
-  console.log(`GraphQL API ready at http://localhost:${port}/graphql`);
+  // Render (and most PaaS providers) inject PORT and route only to that port.
+  const port = Number(process.env.PORT ?? process.env.API_PORT ?? 4000);
+  await app.listen(port, '0.0.0.0');
+  console.log(`GraphQL API ready on port ${port}`);
 }
 
 void bootstrap();
