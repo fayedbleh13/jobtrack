@@ -1,0 +1,52 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Builds
+dist/
+build/
+.next/
+out/
+*.tsbuildinfo
+next-env.d.ts
+
+# Turborepo
+.turbo/
+
+# Env
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-error.log*
+
+# Testing
+coverage/
+playwright-report/
+test-results/
+blob-report/
+
+# Prisma local db
+apps/api/prisma/*.db
+apps/api/prisma/*.db-journal
+
+# Generated GraphQL types
+apps/web/src/graphql/generated/
+
+# Generated Prisma client
+apps/api/src/generated/
+
+# Editor / OS
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.swp
+
+# Agent tooling
+.commandcode/
