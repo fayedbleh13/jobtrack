@@ -36,6 +36,9 @@ jobs:
       - name: Generate Prisma client
         run: pnpm --filter @jobtrack/api prisma:generate
 
+      - name: Check GraphQL schema is current
+        run: pnpm --filter @jobtrack/api schema:check
+
       - name: Format and lint
         run: pnpm check
 
