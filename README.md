@@ -195,13 +195,13 @@ Run from the repository root.
 
 ## Testing
 
-111 tests, split by what they are worth testing:
+115 tests, split by what they are worth testing:
 
 - **API unit tests** cover logic rather than HTTP: password hashing and credential checks,
   the status-transition table, the analytics maths (response rate, day averaging, date
   grouping) as pure functions with no database, ownership-scoped application/reminder
-  services, DTO validation and email normalisation, the HTTP/GraphQL throttler context
-  branch, and the database-backed health check.
+  services, DTO validation and email normalisation, database URL normalisation, the
+  HTTP/GraphQL throttler context branch, and the database-backed health check.
 - **Web component tests** cover behaviour: the login flow via a mocked GraphQL client, card
   and timeline rendering, form schema validation, the filter store, the debounce hook, the
   reminder split, and the notification hook with a stubbed `Notification`.
@@ -225,7 +225,7 @@ Run from the repository root.
 
 | Variable | Default | Notes |
 | --- | --- | --- |
-| `DATABASE_URL` | `postgresql://jobtrack:jobtrack@localhost:5432/jobtrack` | Compose overrides the host to `db`. |
+| `DATABASE_URL` | `postgresql://jobtrack:jobtrack@localhost:5432/jobtrack` | Compose overrides the host to `db`. Use `?sslmode=verify-full` for managed Postgres. |
 | `API_PORT` | `4000` | |
 | `JWT_SECRET` | dev placeholder | Set a real secret in production. |
 | `WEB_ORIGIN` | `http://localhost:3000` | Allowed CORS origin; the cookie depends on it. |
