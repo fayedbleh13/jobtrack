@@ -3,18 +3,9 @@
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { type StatusFilterValue, useApplicationFilters } from '@/stores/application-filters';
-import { STATUS_LABELS } from './status-badge';
+import { STATUS_LABELS, STATUS_VALUES } from './application-options';
 
-const STATUS_OPTIONS: StatusFilterValue[] = [
-  'ALL',
-  'WISHLIST',
-  'APPLIED',
-  'SCREENING',
-  'INTERVIEW',
-  'OFFER',
-  'REJECTED',
-  'GHOSTED',
-];
+const STATUS_OPTIONS: StatusFilterValue[] = ['ALL', ...STATUS_VALUES];
 
 export function FilterBar() {
   const status = useApplicationFilters((state) => state.status);
@@ -47,8 +38,8 @@ export function FilterBar() {
               className={cn(
                 'rounded-full border px-3 py-1 text-xs font-medium transition-colors',
                 isActive
-                  ? 'border-slate-900 bg-slate-900 text-white'
-                  : 'border-slate-200 bg-white text-slate-600 hover:border-slate-400',
+                  ? 'border-primary bg-primary text-primary-foreground'
+                  : 'border-border bg-card text-muted-foreground hover:border-primary/50',
               )}
             >
               {option === 'ALL' ? 'All' : STATUS_LABELS[option]}

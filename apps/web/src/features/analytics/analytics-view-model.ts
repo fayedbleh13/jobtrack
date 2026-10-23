@@ -1,5 +1,5 @@
 import type { AnalyticsQuery } from '@/graphql/generated/graphql';
-import { STATUS_LABELS } from '../applications/status-badge';
+import { STATUS_LABELS } from '../applications/application-options';
 
 type StatusCount = AnalyticsQuery['analytics']['byStatus'][number];
 type TimePoint = AnalyticsQuery['analytics']['applicationsOverTime'][number];

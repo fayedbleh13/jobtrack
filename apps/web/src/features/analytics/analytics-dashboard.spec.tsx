@@ -1,7 +1,8 @@
-import { MockedProvider } from '@apollo/client/testing/react';
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import { AnalyticsDocument, type AnalyticsQuery } from '@/graphql/generated/graphql';
+import { AnalyticsDocument } from '@/graphql/generated/graphql';
+import { makeAnalytics } from '../../../test/factories';
+import { renderWithApollo } from '../../../test/render';
 import { AnalyticsDashboard } from './analytics-dashboard';
 
 vi.mock('./funnel-chart', () => ({
@@ -12,43 +13,23 @@ vi.mock('./applications-over-time-chart', () => ({
   ApplicationsOverTimeChart: () => <div data-testid="over-time-chart" />,
 }));
 
-const populated: AnalyticsQuery['analytics'] = {
-  total: 8,
-  responseRate: 0.7142857142857143,
-  avgDaysToInterview: 18.7,
-  byStatus: [
-    { status: 'WISHLIST', count: 1 },
-    { status: 'APPLIED', count: 2 },
-    { status: 'SCREENING', count: 1 },
-    { status: 'INTERVIEW', count: 1 },
-    { status: 'OFFER', count: 1 },
-    { status: 'REJECTED', count: 1 },
-    { status: 'GHOSTED', count: 1 },
-  ],
-  applicationsOverTime: [{ date: '2026-10-01', count: 2 }],
-};
+const populated = makeAnalytics();
 
-const empty: AnalyticsQuery['analytics'] = {
+const empty = makeAnalytics({
   total: 0,
   responseRate: 0,
   avgDaysToInterview: null,
   byStatus: populated.byStatus.map((entry) => ({ ...entry, count: 0 })),
   applicationsOverTime: [],
-};
+});
 
-function renderWith(summary: AnalyticsQuery['analytics']) {
-  return render(
-    <MockedProvider
-      mocks={[
-        {
-          request: { query: AnalyticsDocument },
-          result: { data: { analytics: summary } },
-        },
-      ]}
-    >
-      <AnalyticsDashboard />
-    </MockedProvider>,
-  );
+function renderWith(summary: typeof populated) {
+  return renderWithApollo(<AnalyticsDashboard />, [
+    {
+      request: { query: AnalyticsDocument },
+      result: { data: { analytics: summary } },
+    },
+  ]);
 }
 
 describe('AnalyticsDashboard', () => {

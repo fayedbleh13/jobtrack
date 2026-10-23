@@ -1,8 +1,9 @@
 'use client';
 
 import { useQuery } from '@apollo/client/react';
-import { BarChart2, BriefcaseBusiness, Clock3, MessageSquareReply, Trophy } from 'lucide-react';
+import { BriefcaseBusiness, Clock3, MessageSquareReply, Trophy } from 'lucide-react';
 import Link from 'next/link';
+import { EmptyState, ErrorState } from '@/components/state-panels';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AnalyticsDocument } from '@/graphql/generated/graphql';
@@ -50,21 +51,16 @@ function DashboardSkeleton() {
 }
 
 export function AnalyticsDashboard() {
-  const { data, loading, error } = useQuery(AnalyticsDocument);
+  const { data, loading, error } = useQuery(AnalyticsDocument, {
+    fetchPolicy: 'cache-and-network',
+  });
 
-  if (loading) {
+  if (loading && !data) {
     return <DashboardSkeleton />;
   }
 
   if (error) {
-    return (
-      <Card className="border-destructive/30 bg-destructive/5">
-        <CardContent className="flex items-center gap-2 py-6 text-sm text-destructive">
-          <BarChart2 className="h-4 w-4 shrink-0" aria-hidden />
-          Could not load analytics: {error.message}
-        </CardContent>
-      </Card>
-    );
+    return <ErrorState title="Could not load analytics" description={error.message} />;
   }
 
   const summary = data?.analytics;
@@ -74,22 +70,18 @@ export function AnalyticsDashboard() {
 
   if (summary.total === 0) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>No data yet</CardTitle>
-          <CardDescription>
-            Add your first application and this dashboard starts filling in.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+      <EmptyState
+        title="No data yet"
+        description="Add your first application and this dashboard starts filling in."
+        action={
           <Link
             href="/applications"
             className="text-sm font-medium text-primary underline-offset-4 hover:underline"
           >
             Go to applications
           </Link>
-        </CardContent>
-      </Card>
+        }
+      />
     );
   }
 

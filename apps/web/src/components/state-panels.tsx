@@ -31,10 +31,12 @@ export function ErrorState({
   title = 'Something went wrong',
   description,
   onRetry,
+  action,
 }: {
   title?: string;
   description?: string;
   onRetry?: () => void;
+  action?: ReactNode;
 }) {
   return (
     <div
@@ -50,6 +52,7 @@ export function ErrorState({
           <p className="max-w-sm text-sm text-muted-foreground">{description}</p>
         ) : null}
       </div>
+      {action}
       {onRetry ? (
         <Button variant="outline" size="sm" onClick={onRetry}>
           Try again

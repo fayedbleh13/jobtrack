@@ -8,16 +8,19 @@ type ReminderItemProps = {
   reminder: Reminder;
   overdue: boolean;
   busy: boolean;
-  onToggle: (id: string) => void;
+  onToggle: (id: string) => Promise<boolean>;
 };
 
 export function ReminderItem({ reminder, overdue, busy, onToggle }: ReminderItemProps) {
   // Ticks immediately on click, then the row disappears when the refetch lands.
   const [checked, setChecked] = useState(false);
 
-  function handleToggle() {
+  async function handleToggle() {
     setChecked(true);
-    onToggle(reminder.id);
+    const saved = await onToggle(reminder.id);
+    if (!saved) {
+      setChecked(false);
+    }
   }
 
   return (
@@ -25,7 +28,7 @@ export function ReminderItem({ reminder, overdue, busy, onToggle }: ReminderItem
       <input
         type="checkbox"
         checked={checked}
-        onChange={handleToggle}
+        onChange={() => void handleToggle()}
         disabled={busy}
         aria-label={`Mark "${reminder.title}" as done`}
         className="mt-0.5 size-6 shrink-0 cursor-pointer accent-primary disabled:cursor-not-allowed disabled:opacity-50"

@@ -1,6 +1,6 @@
 import { act, renderHook } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import type { Reminder } from './reminders-view-model';
+import { makeReminder } from '../../../test/factories';
 import { useReminderNotifications } from './use-reminder-notifications';
 
 type SentNotification = { title: string; body?: string };
@@ -16,18 +16,12 @@ class FakeNotification {
   }
 }
 
-function reminder(id: string, dueAt: string, done = false): Reminder {
-  return {
-    id,
-    title: `Reminder ${id}`,
-    dueAt,
-    done,
-    application: { id: 'a1', company: 'Acme Corp', role: 'Engineer', status: 'APPLIED' },
-  };
-}
-
 const OVERDUE = '2020-01-01T09:00:00.000Z';
 const FUTURE = '2099-01-01T09:00:00.000Z';
+
+function reminder(id: string, dueAt: string, done = false) {
+  return makeReminder({ id, title: `Reminder ${id}`, dueAt, done });
+}
 
 describe('useReminderNotifications', () => {
   beforeEach(() => {

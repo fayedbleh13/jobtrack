@@ -1,6 +1,6 @@
 'use client';
 
-import { useMutation } from '@apollo/client/react';
+import { useApolloClient, useMutation } from '@apollo/client/react';
 import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { type FormEvent, useState } from 'react';
@@ -13,6 +13,7 @@ import { LoginDocument } from '@/graphql/generated/graphql';
 
 export function LoginForm() {
   const router = useRouter();
+  const client = useApolloClient();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [login, { loading, error }] = useMutation(LoginDocument);
@@ -22,6 +23,8 @@ export function LoginForm() {
 
     try {
       await login({ variables: { input: { email, password } } });
+      // Do not let a previous session's cached applications leak into this one.
+      await client.clearStore();
       router.replace('/applications');
       router.refresh();
     } catch {
