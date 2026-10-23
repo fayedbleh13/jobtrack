@@ -5,6 +5,8 @@ import { IsDate, IsString, MaxLength, MinLength } from 'class-validator';
 export class CreateReminderInput {
   @Field(() => ID)
   @IsString()
+  @MinLength(1)
+  @MaxLength(64)
   applicationId: string;
 
   @Field()

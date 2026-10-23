@@ -1,4 +1,3 @@
-import { UseGuards } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
 import type { Response } from 'express';
@@ -10,7 +9,6 @@ import { AuthService } from './auth.service';
 import { AuthPayload } from './auth.types';
 import { LoginInput } from './dto/login.input';
 import { RegisterInput } from './dto/register.input';
-import { GqlAuthGuard } from './gql-auth.guard';
 
 @Resolver(() => UserEntity)
 export class AuthResolver {
@@ -43,9 +41,8 @@ export class AuthResolver {
   }
 
   @Query(() => UserEntity, { nullable: true })
-  @UseGuards(GqlAuthGuard)
   me(@CurrentUser() user: UserEntity | null): UserEntity | null {
-    return user;
+    return user ?? null;
   }
 
   private async setSessionCookie(

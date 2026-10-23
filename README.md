@@ -188,16 +188,20 @@ Run from the repository root.
 | `pnpm check` | Biome: format, lint and import order (read-only) |
 | `pnpm check:fix` | Same, applying safe fixes |
 | `pnpm format` | Format only |
+| `pnpm --filter @jobtrack/api schema:generate` | Regenerate the committed GraphQL schema |
+| `pnpm --filter @jobtrack/api schema:check` | Fails if the committed GraphQL schema is stale |
 
 ---
 
 ## Testing
 
-86 tests, split by what they are worth testing:
+111 tests, split by what they are worth testing:
 
 - **API unit tests** cover logic rather than HTTP: password hashing and credential checks,
-  the status-transition table, and the analytics maths (response rate, day averaging, date
-  grouping) as pure functions with no database.
+  the status-transition table, the analytics maths (response rate, day averaging, date
+  grouping) as pure functions with no database, ownership-scoped application/reminder
+  services, DTO validation and email normalisation, the HTTP/GraphQL throttler context
+  branch, and the database-backed health check.
 - **Web component tests** cover behaviour: the login flow via a mocked GraphQL client, card
   and timeline rendering, form schema validation, the filter store, the debounce hook, the
   reminder split, and the notification hook with a stubbed `Notification`.
@@ -212,8 +216,8 @@ Run from the repository root.
   `react` rule domains scoped to the web app and `test` rules scoped to test files.
 - **Husky** runs Biome on staged files at commit time and **commitlint** enforces
   Conventional Commits.
-- **CI** (`.github/workflows/ci.yml`) runs install → Prisma generate → check → typecheck →
-  test → build on every pull request and on `main`.
+- **CI** (`.github/workflows/ci.yml`) runs install → Prisma generate → GraphQL schema check →
+  check → typecheck → test → build on every pull request and on `main`.
 - **`main` is protected**: pull requests required, the `verify` check required, linear
   history, no force pushes or deletions.
 

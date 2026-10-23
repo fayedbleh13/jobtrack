@@ -1,7 +1,7 @@
 'use client';
 
 import { useMutation, useQuery } from '@apollo/client/react';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { EmptyState, ErrorState } from '@/components/state-panels';
 import { Button } from '@/components/ui/button';
@@ -17,20 +17,37 @@ const SKELETON_KEYS = ['one', 'two', 'three'];
 
 export function RemindersScreen() {
   const { data, loading, error, refetch } = useQuery(UpcomingRemindersDocument);
-  const [toggleReminder, { loading: toggling }] = useMutation(ToggleReminderDocument, {
+  const [toggleReminder] = useMutation(ToggleReminderDocument, {
     refetchQueries: [UpcomingRemindersDocument],
   });
+  const [pendingId, setPendingId] = useState<string | null>(null);
+  const [now, setNow] = useState<Date | null>(null);
 
   const reminders = useMemo(() => data?.upcomingReminders ?? [], [data]);
-  const { overdue, upcoming } = useMemo(() => splitReminders(reminders, new Date()), [reminders]);
+
+  useEffect(() => {
+    setNow(new Date());
+    const timer = setInterval(() => setNow(new Date()), 60_000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const { overdue, upcoming } = useMemo(
+    () => (now ? splitReminders(reminders, now) : { overdue: [], upcoming: [] }),
+    [reminders, now],
+  );
   const { permission, requestPermission } = useReminderNotifications(reminders);
 
-  async function toggle(id: string) {
+  async function toggle(id: string): Promise<boolean> {
+    setPendingId(id);
     try {
       await toggleReminder({ variables: { id } });
       toast.success('Reminder completed');
+      return true;
     } catch {
       toast.error('Could not update the reminder', { description: 'Nothing was saved.' });
+      return false;
+    } finally {
+      setPendingId(null);
     }
   }
 
@@ -83,8 +100,8 @@ export function RemindersScreen() {
                   key={reminder.id}
                   reminder={reminder}
                   overdue
-                  busy={toggling}
-                  onToggle={(id) => void toggle(id)}
+                  busy={pendingId === reminder.id}
+                  onToggle={toggle}
                 />
               ))}
             </ul>
@@ -104,8 +121,8 @@ export function RemindersScreen() {
                   key={reminder.id}
                   reminder={reminder}
                   overdue={false}
-                  busy={toggling}
-                  onToggle={(id) => void toggle(id)}
+                  busy={pendingId === reminder.id}
+                  onToggle={toggle}
                 />
               ))}
             </ul>

@@ -1,16 +1,7 @@
 import { Badge } from '@/components/ui/badge';
 import type { ApplicationStatus } from '@/graphql/generated/graphql';
 import { cn } from '@/lib/utils';
-
-export const STATUS_LABELS: Record<ApplicationStatus, string> = {
-  WISHLIST: 'Wishlist',
-  APPLIED: 'Applied',
-  SCREENING: 'Screening',
-  INTERVIEW: 'Interview',
-  OFFER: 'Offer',
-  REJECTED: 'Rejected',
-  GHOSTED: 'Ghosted',
-};
+import { STATUS_LABELS } from './application-options';
 
 const STATUS_STYLES: Record<ApplicationStatus, string> = {
   WISHLIST: 'bg-slate-100 text-slate-700',

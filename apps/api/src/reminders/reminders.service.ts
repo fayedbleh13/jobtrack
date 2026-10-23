@@ -1,4 +1,5 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import { notFound } from '../common/errors';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateReminderInput } from './dto/create-reminder.input';
 
@@ -19,14 +20,7 @@ export class RemindersService {
   }
 
   async create(userId: string, input: CreateReminderInput) {
-    const application = await this.prisma.application.findFirst({
-      where: { id: input.applicationId, userId },
-      select: { id: true },
-    });
-
-    if (!application) {
-      throw new NotFoundException('Application not found');
-    }
+    const application = await this.findOwnedApplication(userId, input.applicationId);
 
     return this.prisma.reminder.create({
       data: {
@@ -45,7 +39,7 @@ export class RemindersService {
     });
 
     if (!reminder) {
-      throw new NotFoundException('Reminder not found');
+      throw notFound('Reminder not found');
     }
 
     return this.prisma.reminder.update({
@@ -53,5 +47,18 @@ export class RemindersService {
       data: { done: !reminder.done },
       include: withApplication,
     });
+  }
+
+  private async findOwnedApplication(userId: string, id: string) {
+    const application = await this.prisma.application.findFirst({
+      where: { id, userId },
+      select: { id: true },
+    });
+
+    if (!application) {
+      throw notFound('Application not found');
+    }
+
+    return application;
   }
 }

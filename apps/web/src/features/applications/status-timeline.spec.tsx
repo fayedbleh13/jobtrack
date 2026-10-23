@@ -1,29 +1,23 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
+import { makeTimelineEntry } from '../../../test/factories';
 import { StatusTimeline, type TimelineEntry } from './status-timeline';
 
 const entries: TimelineEntry[] = [
-  {
-    id: 't1',
-    fromStatus: null,
-    toStatus: 'WISHLIST',
-    at: '2026-10-01T12:00:00.000Z',
-    note: null,
-  },
-  {
+  makeTimelineEntry(),
+  makeTimelineEntry({
     id: 't2',
     fromStatus: 'WISHLIST',
     toStatus: 'APPLIED',
     at: '2026-10-02T12:00:00.000Z',
     note: 'Applied via board',
-  },
-  {
+  }),
+  makeTimelineEntry({
     id: 't3',
     fromStatus: 'APPLIED',
     toStatus: 'INTERVIEW',
     at: '2026-10-05T12:00:00.000Z',
-    note: null,
-  },
+  }),
 ];
 
 describe('StatusTimeline', () => {

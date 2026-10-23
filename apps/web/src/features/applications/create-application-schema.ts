@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { SOURCE_OPTIONS } from './application-options';
+import { PRIORITY_VALUES, SOURCE_OPTIONS, STAGE_VALUES } from './application-options';
 
 const WHOLE_NUMBER = /^\d+$/;
 
@@ -7,10 +7,10 @@ export const createApplicationSchema = z
   .object({
     company: z.string().trim().min(1, 'Company is required').max(120),
     role: z.string().trim().min(1, 'Role is required').max(120),
-    status: z.enum(['APPLIED', 'WISHLIST']).optional(),
+    status: z.enum(STAGE_VALUES).optional(),
     location: z.string().trim().max(120).optional(),
     source: z.enum(SOURCE_OPTIONS).optional(),
-    priority: z.enum(['1', '2', '3']).optional(),
+    priority: z.enum(PRIORITY_VALUES).optional(),
     salaryMin: z.string().trim().optional(),
     salaryMax: z.string().trim().optional(),
     notes: z.string().trim().max(4000).optional(),
@@ -32,3 +32,15 @@ export const createApplicationSchema = z
   );
 
 export type CreateApplicationValues = z.infer<typeof createApplicationSchema>;
+
+export const createApplicationDefaultValues: CreateApplicationValues = {
+  company: '',
+  role: '',
+  status: 'APPLIED',
+  location: '',
+  source: undefined,
+  priority: undefined,
+  salaryMin: '',
+  salaryMax: '',
+  notes: '',
+};

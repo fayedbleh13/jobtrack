@@ -1,15 +1,19 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { dueReminders, type Reminder } from './reminders-view-model';
 
 export type NotificationSupport = NotificationPermission | 'unsupported';
 
 export function useReminderNotifications(reminders: Reminder[]) {
-  const [permission, setPermission] = useState<NotificationSupport>(() =>
-    typeof Notification === 'undefined' ? 'unsupported' : Notification.permission,
-  );
-  const [notifiedIds, setNotifiedIds] = useState<string[]>([]);
+  // Start with a server-safe value so the initial HTML and the first client
+  // render match; the real permission is read after hydration.
+  const [permission, setPermission] = useState<NotificationSupport>('unsupported');
+  const notifiedIds = useRef<Set<string>>(new Set());
+
+  useEffect(() => {
+    setPermission(typeof Notification === 'undefined' ? 'unsupported' : Notification.permission);
+  }, []);
 
   const requestPermission = useCallback(async () => {
     if (typeof Notification === 'undefined') {
@@ -25,7 +29,7 @@ export function useReminderNotifications(reminders: Reminder[]) {
     }
 
     const due = dueReminders(reminders, new Date()).filter(
-      (reminder) => !notifiedIds.includes(reminder.id),
+      (reminder) => !notifiedIds.current.has(reminder.id),
     );
 
     if (due.length === 0) {
@@ -34,10 +38,9 @@ export function useReminderNotifications(reminders: Reminder[]) {
 
     for (const reminder of due) {
       new Notification('JobTrack reminder', { body: reminder.title });
+      notifiedIds.current.add(reminder.id);
     }
-
-    setNotifiedIds((current) => [...current, ...due.map((reminder) => reminder.id)]);
-  }, [reminders, permission, notifiedIds]);
+  }, [reminders, permission]);
 
   return { permission, requestPermission };
 }

@@ -1,5 +1,5 @@
-query Applications($status: ApplicationStatus, $search: String) {
-  applications(status: $status, search: $search) {
+query Applications($status: ApplicationStatus, $search: String, $take: Int, $skip: Int) {
+  applications(status: $status, search: $search, take: $take, skip: $skip) {
     id
     company
     role

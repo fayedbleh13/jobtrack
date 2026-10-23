@@ -1,11 +1,19 @@
 import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
+import { Prisma } from '../generated/prisma/client';
 import { UsersService } from '../users/users.service';
 import type { LoginInput } from './dto/login.input';
 import type { RegisterInput } from './dto/register.input';
 
 const SALT_ROUNDS = 10;
+// Compared against when the email does not exist so response timing does not
+// reveal whether an account is registered.
+const DUMMY_PASSWORD_HASH = bcrypt.hashSync('not-a-real-password', SALT_ROUNDS);
+
+function normalizeEmail(email: string): string {
+  return email.trim().toLowerCase();
+}
 
 @Injectable()
 export class AuthService {
@@ -15,23 +23,31 @@ export class AuthService {
   ) {}
 
   async register(input: RegisterInput) {
-    const existing = await this.users.findByEmail(input.email);
+    const email = normalizeEmail(input.email);
+    const existing = await this.users.findByEmail(email);
     if (existing) {
       throw new ConflictException('Email is already registered');
     }
 
     const passwordHash = await bcrypt.hash(input.password, SALT_ROUNDS);
-    return this.users.create({ email: input.email, name: input.name, passwordHash });
+
+    try {
+      return await this.users.create({ email, name: input.name, passwordHash });
+    } catch (error) {
+      // The check above is a friendly fast path; the unique index is the real
+      // guard. Two concurrent registrations can still race here.
+      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
+        throw new ConflictException('Email is already registered');
+      }
+      throw error;
+    }
   }
 
   async login(input: LoginInput) {
-    const user = await this.users.findByEmail(input.email);
-    if (!user) {
-      throw new UnauthorizedException('Invalid email or password');
-    }
+    const user = await this.users.findByEmail(normalizeEmail(input.email));
+    const valid = await bcrypt.compare(input.password, user?.passwordHash ?? DUMMY_PASSWORD_HASH);
 
-    const valid = await bcrypt.compare(input.password, user.passwordHash);
-    if (!valid) {
+    if (!user || !valid) {
       throw new UnauthorizedException('Invalid email or password');
     }
 

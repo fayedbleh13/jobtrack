@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": ".schema-build",
+    "rootDir": ".",
+    "incremental": false,
+    "declaration": false
+  },
+  "include": ["src/**/*", "scripts/generate-schema.ts"]
+}

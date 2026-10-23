@@ -8,7 +8,7 @@ export type ApplicationSummary = ApplicationsQuery['applications'][number];
 
 export function ApplicationCard({ application }: { application: ApplicationSummary }) {
   const salary = formatSalaryRange(application.salaryMin, application.salaryMax);
-  const nextReminder = application.reminders[0];
+  const nextReminder = application.reminders.find((reminder) => !reminder.done);
 
   return (
     <Card className="relative h-full justify-between transition-shadow hover:shadow-md">

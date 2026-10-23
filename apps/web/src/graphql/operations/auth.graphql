@@ -11,11 +11,3 @@ mutation Login($input: LoginInput!) {
 mutation Logout {
   logout
 }
-
-query Me {
-  me {
-    id
-    email
-    name
-  }
-}

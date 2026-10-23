@@ -1,6 +1,7 @@
 'use client';
 
 import { useQuery } from '@apollo/client/react';
+import { useState } from 'react';
 import { EmptyState, ErrorState } from '@/components/state-panels';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
@@ -13,6 +14,7 @@ import { CreateApplicationDialog } from './create-application-dialog';
 import { FilterBar } from './filter-bar';
 
 const SKELETON_KEYS = ['one', 'two', 'three', 'four', 'five', 'six'];
+const PAGE_SIZE = 24;
 
 function BoardSkeleton() {
   return (
@@ -40,18 +42,55 @@ export function ApplicationsBoard() {
   const search = useApplicationFilters((state) => state.search);
   const reset = useApplicationFilters((state) => state.reset);
   const debouncedSearch = useDebouncedValue(search, 300);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const queryKey = `${status}|${debouncedSearch}`;
+  const [pagination, setPagination] = useState<{ key: string; hasMore: boolean | null }>({
+    key: queryKey,
+    hasMore: null,
+  });
+  const hasMore = pagination.key === queryKey ? pagination.hasMore : null;
 
-  const { data, loading, error, refetch } = useQuery(ApplicationsDocument, {
-    variables: {
-      status: status === 'ALL' ? undefined : status,
-      search: debouncedSearch.trim() || undefined,
-    },
+  const variables = {
+    status: status === 'ALL' ? undefined : status,
+    search: debouncedSearch.trim() || undefined,
+    take: PAGE_SIZE,
+    skip: 0,
+  };
+
+  const { data, loading, error, refetch, fetchMore } = useQuery(ApplicationsDocument, {
+    variables,
   });
 
   const applications = data?.applications ?? [];
   const hasFilters = status !== 'ALL' || debouncedSearch.trim().length > 0;
   // Only skeletonise when there is nothing to show; refetches keep the existing grid.
   const showSkeleton = loading && !data;
+  const canLoadMore = hasMore ?? applications.length >= PAGE_SIZE;
+
+  async function loadMore() {
+    setLoadingMore(true);
+    try {
+      const result = await fetchMore({
+        variables: { ...variables, skip: applications.length },
+        updateQuery: (previous, { fetchMoreResult }) => {
+          if (!fetchMoreResult) {
+            return previous;
+          }
+
+          return {
+            applications: [...previous.applications, ...fetchMoreResult.applications],
+          };
+        },
+      });
+
+      setPagination({
+        key: queryKey,
+        hasMore: (result.data?.applications.length ?? 0) >= PAGE_SIZE,
+      });
+    } finally {
+      setLoadingMore(false);
+    }
+  }
 
   return (
     <div className="flex flex-col gap-6">
@@ -100,6 +139,14 @@ export function ApplicationsBoard() {
           </li>
         ))}
       </ul>
+
+      {canLoadMore && !showSkeleton && !error ? (
+        <div className="flex justify-center">
+          <Button variant="outline" onClick={() => void loadMore()} disabled={loadingMore}>
+            {loadingMore ? 'Loading…' : 'Load more'}
+          </Button>
+        </div>
+      ) : null}
     </div>
   );
 }

@@ -1,8 +1,8 @@
-import { MockedProvider } from '@apollo/client/testing/react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import { LoginDocument } from '@/graphql/generated/graphql';
+import { renderWithApollo } from '../../../test/render';
 import { LoginForm } from './login-form';
 
 const { replace, refresh } = vi.hoisted(() => ({ replace: vi.fn(), refresh: vi.fn() }));
@@ -23,7 +23,7 @@ async function fillAndSubmit() {
 
 describe('LoginForm', () => {
   it('signs in and redirects to the applications board', async () => {
-    const mocks = [
+    renderWithApollo(<LoginForm />, [
       {
         request: { query: LoginDocument, variables: credentials },
         result: {
@@ -32,13 +32,7 @@ describe('LoginForm', () => {
           },
         },
       },
-    ];
-
-    render(
-      <MockedProvider mocks={mocks}>
-        <LoginForm />
-      </MockedProvider>,
-    );
+    ]);
 
     await fillAndSubmit();
 
@@ -46,18 +40,12 @@ describe('LoginForm', () => {
   });
 
   it('shows the error returned by the API', async () => {
-    const mocks = [
+    renderWithApollo(<LoginForm />, [
       {
         request: { query: LoginDocument, variables: credentials },
         error: new Error('Invalid email or password'),
       },
-    ];
-
-    render(
-      <MockedProvider mocks={mocks}>
-        <LoginForm />
-      </MockedProvider>,
-    );
+    ]);
 
     await fillAndSubmit();
 

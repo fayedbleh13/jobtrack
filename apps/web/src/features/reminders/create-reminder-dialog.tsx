@@ -4,19 +4,19 @@ import { useMutation, useQuery } from '@apollo/client/react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { z } from 'zod';
+import { toast } from 'sonner';
+import { DialogActions } from '@/components/dialog-actions';
+import { FormField, fieldA11y } from '@/components/form-field';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
@@ -29,16 +29,11 @@ import {
   CreateReminderDocument,
   UpcomingRemindersDocument,
 } from '@/graphql/generated/graphql';
-
-const reminderSchema = z.object({
-  applicationId: z.string().min(1, 'Choose an application'),
-  title: z.string().trim().min(1, 'Title is required').max(200),
-  dueAt: z.string().min(1, 'Pick a due date'),
-});
-
-type ReminderFormValues = z.infer<typeof reminderSchema>;
-
-const EMPTY_VALUES: ReminderFormValues = { applicationId: '', title: '', dueAt: '' };
+import {
+  type CreateReminderValues,
+  createReminderDefaultValues,
+  createReminderSchema,
+} from './create-reminder-schema';
 
 export function CreateReminderDialog() {
   const [open, setOpen] = useState(false);
@@ -59,15 +54,28 @@ export function CreateReminderDialog() {
     control,
     reset,
     formState: { errors },
-  } = useForm<ReminderFormValues>({
-    resolver: zodResolver(reminderSchema),
-    defaultValues: EMPTY_VALUES,
+  } = useForm<CreateReminderValues>({
+    resolver: zodResolver(createReminderSchema),
+    defaultValues: createReminderDefaultValues,
   });
 
-  async function onSubmit(values: ReminderFormValues) {
+  async function onSubmit(values: CreateReminderValues) {
     try {
-      await createReminder({ variables: { input: values } });
-      reset(EMPTY_VALUES);
+      // The API scalar expects a full ISO date-time; noon avoids the date
+      // shifting backwards for users west of UTC.
+      const dueAt = new Date(`${values.dueAt}T12:00:00`).toISOString();
+
+      await createReminder({
+        variables: {
+          input: {
+            applicationId: values.applicationId,
+            title: values.title,
+            dueAt,
+          },
+        },
+      });
+      toast.success('Reminder created');
+      reset(createReminderDefaultValues);
       setOpen(false);
     } catch {
       // Surfaced through the mutation's `error` state below.
@@ -88,8 +96,11 @@ export function CreateReminderDialog() {
           </DialogHeader>
 
           <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="applicationId">Application</Label>
+            <FormField
+              label="Application"
+              htmlFor="applicationId"
+              error={errors.applicationId?.message}
+            >
               <Controller
                 control={control}
                 name="applicationId"
@@ -99,7 +110,11 @@ export function CreateReminderDialog() {
                     value={field.value || null}
                     onValueChange={(value) => field.onChange(value)}
                   >
-                    <SelectTrigger id="applicationId" className="w-full">
+                    <SelectTrigger
+                      id="applicationId"
+                      className="w-full"
+                      {...fieldA11y('applicationId', errors.applicationId?.message)}
+                    >
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -112,26 +127,25 @@ export function CreateReminderDialog() {
                   </Select>
                 )}
               />
-              {errors.applicationId ? (
-                <p className="text-xs text-rose-600">{errors.applicationId.message}</p>
-              ) : null}
-            </div>
+            </FormField>
 
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="title">What to do</Label>
-              <Input id="title" placeholder="Follow up with the recruiter" {...register('title')} />
-              {errors.title ? (
-                <p className="text-xs text-rose-600">{errors.title.message}</p>
-              ) : null}
-            </div>
+            <FormField label="What to do" htmlFor="title" error={errors.title?.message}>
+              <Input
+                id="title"
+                placeholder="Follow up with the recruiter"
+                {...fieldA11y('title', errors.title?.message)}
+                {...register('title')}
+              />
+            </FormField>
 
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="dueAt">Due date</Label>
-              <Input id="dueAt" type="date" {...register('dueAt')} />
-              {errors.dueAt ? (
-                <p className="text-xs text-rose-600">{errors.dueAt.message}</p>
-              ) : null}
-            </div>
+            <FormField label="Due date" htmlFor="dueAt" error={errors.dueAt?.message}>
+              <Input
+                id="dueAt"
+                type="date"
+                {...fieldA11y('dueAt', errors.dueAt?.message)}
+                {...register('dueAt')}
+              />
+            </FormField>
 
             {error ? (
               <Alert variant="destructive">
@@ -139,14 +153,7 @@ export function CreateReminderDialog() {
               </Alert>
             ) : null}
 
-            <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => setOpen(false)}>
-                Cancel
-              </Button>
-              <Button type="submit" disabled={loading}>
-                {loading ? 'Saving…' : 'Create'}
-              </Button>
-            </DialogFooter>
+            <DialogActions onCancel={() => setOpen(false)} submitLabel="Create" loading={loading} />
           </form>
         </DialogContent>
       </Dialog>

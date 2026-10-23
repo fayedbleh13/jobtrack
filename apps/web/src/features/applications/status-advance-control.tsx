@@ -11,7 +11,7 @@ import {
   type ApplicationStatus,
   ChangeStatusDocument,
 } from '@/graphql/generated/graphql';
-import { STATUS_LABELS } from './status-badge';
+import { STATUS_LABELS } from './application-options';
 
 type StatusAdvanceControlProps = {
   applicationId: string;
