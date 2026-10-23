@@ -15,6 +15,12 @@ const credentials = {
   input: { email: 'demo@jobtrack.dev', password: 'password123' },
 };
 
+async function fillAndSubmit() {
+  await userEvent.type(screen.getByLabelText(/email/i), credentials.input.email);
+  await userEvent.type(screen.getByLabelText(/password/i), credentials.input.password);
+  await userEvent.click(screen.getByRole('button', { name: /sign in/i }));
+}
+
 describe('LoginForm', () => {
   it('signs in and redirects to the applications board', async () => {
     const mocks = [
@@ -34,7 +40,7 @@ describe('LoginForm', () => {
       </MockedProvider>,
     );
 
-    await userEvent.click(screen.getByRole('button', { name: /sign in/i }));
+    await fillAndSubmit();
 
     await waitFor(() => expect(replace).toHaveBeenCalledWith('/applications'));
   });
@@ -53,7 +59,7 @@ describe('LoginForm', () => {
       </MockedProvider>,
     );
 
-    await userEvent.click(screen.getByRole('button', { name: /sign in/i }));
+    await fillAndSubmit();
 
     expect(await screen.findByText('Invalid email or password')).toBeInTheDocument();
   });

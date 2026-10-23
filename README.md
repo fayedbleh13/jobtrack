@@ -193,7 +193,7 @@ Run from the repository root.
 
 ## Testing
 
-84 tests, split by what they are worth testing:
+86 tests, split by what they are worth testing:
 
 - **API unit tests** cover logic rather than HTTP: password hashing and credential checks,
   the status-transition table, and the analytics maths (response rate, day averaging, date
