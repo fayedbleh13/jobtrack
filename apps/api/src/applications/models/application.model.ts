@@ -1,7 +1,7 @@
 import { Field, GraphQLISODateTime, ID, Int, ObjectType } from '@nestjs/graphql';
 import { ApplicationStatus } from '../../common/graphql/application-status.enum';
+import { ReminderModel } from '../../reminders/models/reminder.model';
 import { ContactModel } from './contact.model';
-import { ReminderModel } from './reminder.model';
 import { StageEventModel } from './stage-event.model';
 
 @ObjectType('Application')

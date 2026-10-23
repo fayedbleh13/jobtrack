@@ -1,5 +1,5 @@
 import { UseGuards } from '@nestjs/common';
-import { Args, ID, Mutation, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
+import { Args, ID, Int, Mutation, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { GqlAuthGuard } from '../auth/gql-auth.guard';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { ApplicationStatus } from '../common/graphql/application-status.enum';
@@ -26,8 +26,10 @@ export class ApplicationsResolver {
     @Args('status', { type: () => ApplicationStatus, nullable: true })
     status?: ApplicationStatus,
     @Args('search', { type: () => String, nullable: true }) search?: string,
+    @Args('take', { type: () => Int, nullable: true }) take?: number,
+    @Args('skip', { type: () => Int, nullable: true }) skip?: number,
   ) {
-    return this.applicationsService.list(user.id, status, search);
+    return this.applicationsService.list(user.id, status, search, take, skip);
   }
 
   @Query(() => ApplicationModel)

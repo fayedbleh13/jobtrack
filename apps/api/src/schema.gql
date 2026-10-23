@@ -106,7 +106,7 @@ type Mutation {
 type Query {
   analytics: AnalyticsSummary!
   application(id: ID!): Application!
-  applications(search: String, status: ApplicationStatus): [Application!]!
+  applications(search: String, skip: Int, status: ApplicationStatus, take: Int): [Application!]!
   health: String!
   me: User
 

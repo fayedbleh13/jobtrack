@@ -12,6 +12,7 @@ next-env.d.ts
 
 # Turborepo
 .turbo/
+apps/api/.schema-build/
 
 # Env
 .env

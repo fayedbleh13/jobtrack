@@ -3,9 +3,8 @@ import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import type { Request } from 'express';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { requireEnv } from '../common/env';
 import { UsersService } from '../users/users.service';
-import { ACCESS_TOKEN_COOKIE } from './auth.constants';
+import { ACCESS_TOKEN_COOKIE, getJwtSecret } from './auth.constants';
 
 type JwtPayload = { sub: string; email: string };
 
@@ -21,7 +20,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         ExtractJwt.fromAuthHeaderAsBearerToken(),
       ]),
       ignoreExpiration: false,
-      secretOrKey: config.get<string>('JWT_SECRET') ?? requireEnv('JWT_SECRET'),
+      secretOrKey: getJwtSecret(config),
     });
   }
 

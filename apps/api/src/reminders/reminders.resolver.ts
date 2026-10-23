@@ -1,10 +1,10 @@
 import { UseGuards } from '@nestjs/common';
 import { Args, ID, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { ReminderModel } from '../applications/models/reminder.model';
 import { GqlAuthGuard } from '../auth/gql-auth.guard';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { UserEntity } from '../users/user.entity';
 import { CreateReminderInput } from './dto/create-reminder.input';
+import { ReminderModel } from './models/reminder.model';
 import { RemindersService } from './reminders.service';
 
 @Resolver(() => ReminderModel)

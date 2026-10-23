@@ -1,8 +1,9 @@
 import { Field, Float, Int, ObjectType } from '@nestjs/graphql';
 import { ApplicationStatus } from '../../common/graphql/application-status.enum';
+import type { AnalyticsSummary, StatusCount, TimePoint } from '../analytics.calculator';
 
 @ObjectType('StatusCount')
-export class StatusCountModel {
+export class StatusCountModel implements StatusCount {
   @Field(() => ApplicationStatus)
   status: ApplicationStatus;
 
@@ -11,7 +12,7 @@ export class StatusCountModel {
 }
 
 @ObjectType('TimePoint')
-export class TimePointModel {
+export class TimePointModel implements TimePoint {
   @Field()
   date: string;
 
@@ -20,7 +21,7 @@ export class TimePointModel {
 }
 
 @ObjectType('AnalyticsSummary')
-export class AnalyticsSummaryModel {
+export class AnalyticsSummaryModel implements AnalyticsSummary {
   @Field(() => Int)
   total: number;
 
