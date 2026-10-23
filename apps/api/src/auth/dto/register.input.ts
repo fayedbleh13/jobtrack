@@ -5,6 +5,7 @@ import { IsEmail, MaxLength, MinLength } from 'class-validator';
 export class RegisterInput {
   @Field()
   @IsEmail()
+  @MaxLength(254) // RFC 5321 maximum
   email: string;
 
   @Field()

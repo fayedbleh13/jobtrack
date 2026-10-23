@@ -10,7 +10,7 @@ export default async function ApplicationDetailPage({
 
   return (
     <section className="flex flex-col gap-6">
-      <Link href="/applications" className="text-sm text-slate-600 underline">
+      <Link href="/applications" className="text-sm text-muted-foreground underline">
         ← Back to applications
       </Link>
 

@@ -13,3 +13,13 @@ allowBuilds:
   esbuild: true
   prisma: true
   unrs-resolver: true
+
+# Security: force patched version of @graphql-tools/utils
+# CVE GHSA-c4qx-w738-7hr3 — prototype pollution in mergeIncrementalResult
+# @nestjs/graphql@14 pins to 12.0.1; this forces >=12.0.2 across all packages.
+overrides:
+  '@graphql-tools/utils': '>=12.0.2'
+  # CVE GHSA-r5fr-rjxr-66jc / GHSA-f23m-r3pf-42rh / GHSA-xxjr-mmjv-4gpg
+  # lodash in @prisma/studio-core (dev tooling only); override ensures the
+  # installed copy is patched even though it is never executed in production.
+  'lodash': '>=4.18.1'

@@ -13,8 +13,8 @@ import { LoginDocument } from '@/graphql/generated/graphql';
 
 export function LoginForm() {
   const router = useRouter();
-  const [email, setEmail] = useState('demo@jobtrack.dev');
-  const [password, setPassword] = useState('password123');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [login, { loading, error }] = useMutation(LoginDocument);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -33,7 +33,7 @@ export function LoginForm() {
     <Card className="w-full max-w-sm">
       <CardHeader>
         <CardTitle className="text-xl">Sign in</CardTitle>
-        <CardDescription>Demo credentials are pre-filled — just press Sign in.</CardDescription>
+        <CardDescription>Enter your credentials to access your dashboard.</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} aria-busy={loading} className="flex flex-col gap-4">
