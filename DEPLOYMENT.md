@@ -35,14 +35,17 @@ registered and the client keeps calling `http://localhost:4000/graphql`.
 2. **Connect** → copy the **direct** connection string. The host must NOT contain `-pooler`:
 
    ```
-   postgresql://USER:PASSWORD@ep-xxxx.ap-southeast-1.aws.neon.tech/jobtrack?sslmode=require
+   postgresql://USER:PASSWORD@ep-xxxx.ap-southeast-1.aws.neon.tech/jobtrack?sslmode=verify-full
    ```
 
    The pooled string (`...-pooler...`) is for serverless runtimes. Migrations need a direct
    connection — PgBouncer's transaction pooling doesn't support the session-level locks they
    rely on.
 3. Drop `&channel_binding=require` if present; `node-postgres` doesn't implement it.
-4. If the password has been shared anywhere (chat, screenshot), reset it under
+4. Use `sslmode=verify-full`. The API normalizes the older `require` / `prefer` /
+   `verify-ca` aliases to `verify-full` for compatibility, but setting the explicit mode
+   keeps `pg` from emitting its upcoming-v9 warning.
+5. If the password has been shared anywhere (chat, screenshot), reset it under
    **Settings → Reset password** once the deployment works.
 
 Nothing else needs provisioning. The API container runs `prisma migrate deploy` and seeds demo
@@ -77,7 +80,7 @@ Environment variables:
 
 | Key | Value |
 | --- | --- |
-| `DATABASE_URL` | the **direct** Neon string |
+| `DATABASE_URL` | the **direct** Neon string with `sslmode=verify-full` |
 | `JWT_SECRET` | a long random string — `openssl rand -hex 32` |
 | `WEB_ORIGIN` | your Vercel URL, e.g. `https://jobtrack.vercel.app` |
 | `COOKIE_SECURE` | `true` |
@@ -203,6 +206,8 @@ Options, cheapest first:
 | Symptom | Cause |
 | --- | --- |
 | `P1001: Can't reach database server`, failing in ~1s | Node resolved the AAAA record first and the host has no IPv6 route. Set `NODE_OPTIONS=--dns-result-order=ipv4first`. |
+| `pg` warning: SSL modes `prefer`/`require`/`verify-ca` are aliases for `verify-full` | Neon's URL uses `sslmode=require`. Use `sslmode=verify-full` in `DATABASE_URL`; the API also normalizes legacy modes for compatibility. |
+| `No open ports detected, continuing to scan...` | The API used to await Prisma before binding `PORT`. Prisma now connects lazily on the first query, so the HTTP listener starts immediately. If it persists, confirm the service is listening on Render's injected `PORT`. |
 | `prepared statement "..." already exists` on boot | Using the **pooled** Neon URL for migrations. Use the direct host. |
 | Sign-in succeeds, then every page redirects to `/login` | The browser is calling the API cross-origin, so the `SameSite=Lax` cookie is dropped. Set `NEXT_PUBLIC_API_URL=/graphql` and `API_PROXY_URL`. |
 | `Cannot find module '../api/src/schema.gql'` during build | Vercel isn't including files outside the Root Directory. See the monorepo caveat. |

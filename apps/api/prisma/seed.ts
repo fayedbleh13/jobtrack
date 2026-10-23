@@ -1,8 +1,11 @@
 import { PrismaPg } from '@prisma/adapter-pg';
 import * as bcrypt from 'bcryptjs';
+import { normalizeDatabaseUrl } from '../src/common/database-url';
 import { ApplicationStatus, PrismaClient } from '../src/generated/prisma/client';
 
-const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
+const adapter = new PrismaPg({
+  connectionString: normalizeDatabaseUrl(process.env.DATABASE_URL),
+});
 const prisma = new PrismaClient({ adapter });
 
 const DAY = 24 * 60 * 60 * 1000;
